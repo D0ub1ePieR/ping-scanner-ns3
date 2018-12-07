@@ -7,7 +7,7 @@ void alarm_timer(int signal)	//设置线程超时时长检测
 	alarm(0);
 }
 
-void get_my_ip(char *myip)	//获取本机ip地址
+void get_my_ip(struct scansock *scan)	//获取本机ip地址
 {
 	FILE *ipshell;
 	ipshell=popen("/sbin/ifconfig | grep 'inet ' | grep -v '127' | awk -F ':' '{print $2}' | cut -d ' ' -f1","r");
@@ -17,8 +17,13 @@ void get_my_ip(char *myip)	//获取本机ip地址
 		perror("popen");
 		exit(0);
 	}
-	fscanf(ipshell, "%20s", myip);
+	fscanf(ipshell, "%20s", scan->src_ip);
 	pclose(ipshell);	//关闭shell窗口
+}
+
+void get_dst(char **dst_ip,char **dst_name,int *count)		//
+{
+	return;
 }
 
 unsigned short checksum(unsigned char* buf, unsigned int len)//求报文校验和，对每16位进行反码求和（高位溢出位会加到低位），即先对每16位求和，在将得到的和转为反码

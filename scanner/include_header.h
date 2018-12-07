@@ -18,6 +18,8 @@
 #include<pthread.h>		//提供多线程操作的函数
 
 #define maxbuf 20480
+#define sport 1			//默认扫描起始端口号
+#defien eport 1024		//默认扫描结束端口号
 
 //global
 struct scansock
@@ -47,7 +49,9 @@ struct pseudohdr
 	//struct tcphdr tcpheader;
 };
 
-int pingflag;
+int pingflag, ipcount=0;
+char dst_ip[maxbuf][20];
+char dst_name[maxbuf][20];
 
 //tcp_connect_scan_port
 struct list
