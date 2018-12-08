@@ -21,11 +21,6 @@ void get_my_ip(struct scansock *scan)	//获取本机ip地址
 	pclose(ipshell);	//关闭shell窗口
 }
 
-void get_dst(char **dst_ip,char **dst_name,int *count)		//
-{
-	return;
-}
-
 unsigned short checksum(unsigned char* buf, unsigned int len)//求报文校验和，对每16位进行反码求和（高位溢出位会加到低位），即先对每16位求和，在将得到的和转为反码
 {
 	unsigned long sum = 0;   
@@ -190,6 +185,35 @@ int ping_target_by_shell(char *dst_ip)
 		return -1;
 	else
 		return 1;	
+}
+
+void get_dst(char dst_ip[maxbuf][20],char dst_name[maxbuf][20],int *count)		//通过arp协议获取局域网内存活的主机ip和主机名
+{
+	char temp[maxbuf];
+	FILE *ipshell;
+	ipshell=popen("/usr/sbin/arp -a | awk -F ' ' '{print $1 $2}'","r");
+		if (ipshell == NULL)
+	{
+		perror("popen");
+		exit(0);
+	}
+	//fscanf(ipshell, "%20480s", temp);
+	while(fgets(temp,maxbuf,ipshell)!=NULL)
+	{
+		int start,end;
+		start=strchr(temp,'(')-temp;
+		end=strchr(temp,')')-temp;
+		strncpy(dst_name[*count],temp,start);
+		strncpy(dst_ip[*count],temp+start+1,end-start-1);
+		//printf("-%s-%s-",dst_name[*count],dst_ip[*count]);
+		printf("* try arplist %s\n",dst_ip[*count]);
+		if (ping_target_by_shell(dst_ip[*count])==1)
+			(*count)++;
+		else
+			printf("  unreachable\n");
+	}
+	//printf("%s\n",temp);
+	return;
 }
 
 #endif

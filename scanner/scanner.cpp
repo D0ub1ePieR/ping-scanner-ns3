@@ -9,7 +9,7 @@ int main(int argc,char** argv)
 	
 	if ( argc > 1 )
 	{
-		printf("---don't give any param! just use %s", argv[0]);
+		printf("---don't give any param! just use %s\n", argv[0]);
 		exit(1);
 	}
 	
@@ -28,19 +28,23 @@ int main(int argc,char** argv)
 		printf("*target host name is %s\n",dst_name[i]);
 		
 		strcpy(scan.dst_ip,dst_ip[i]);
+		
 		pthread_t pidth;
 		err=pthread_create(&pidth,NULL,tcp_con_scan,(void*)&scan);
+		if (err != 0)
+		{
+			printf("pthread_create:%s\n",strerror(err));
+			exit(0);
+		}
+		err=pthread_join(pidth,NULL);
+		if (err != 0)
+		{
+			printf("pthread_join:%s\n",strerror(err));
+			exit(0);
+		}
 	}
-	if (err != 0)
-	{
-		printf("pthread_create:%s\n",strerror(err));
-		exit(0);
-	}
-	err=pthread_join(pidth,NULL);
-	if (err != 0)
-	{
-		printf("pthread_join:%s\n",strerror(err));
-		exit(0);
-	}
+	printf("alive host ip-name:\n");
+	for (i=0;i<ipcount;i++)
+		printf("--%s(%s)\n",dst_name[i],dst_ip[i]);
 	return 0;
 }

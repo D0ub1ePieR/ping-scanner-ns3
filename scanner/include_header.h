@@ -19,7 +19,7 @@
 
 #define maxbuf 20480
 #define sport 1			//默认扫描起始端口号
-#defien eport 1024		//默认扫描结束端口号
+#define eport 1024		//默认扫描结束端口号
 
 //global
 struct scansock
